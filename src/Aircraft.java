@@ -3,76 +3,70 @@ import java.util.HashMap;
 import java.util.Map;
 
 import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 import solver.variables.IntVar;
 import solver.variables.Task;
 import solver.variables.VariableFactory;
 
 
 public class Aircraft {
-
-	protected IntVar[] parking;
-	protected IntVar[] landing;
-	protected IntVar[] take_off;
-	protected Task[] plane;
-	protected IntVar[] runway_capacity;
-	protected IntVar[] plane_weight;
-	protected IntVar open_airport;
-	protected int parking_min_time;
-	protected int parking_max_time;
-	protected int open_hours; 
-	protected int close_hours;
+	
+	protected int opening_time; 
+	protected int closing_time;
 	protected int nb_of_planes;
 	protected int nb_of_runways;
+	protected int[] runway_max_capacity;
+	protected Plane[] planes;
+
+	protected IntVar<?>[] parking;
+	protected IntVar<?>[] landing;
+	protected IntVar<?>[] take_off;
+	protected Task[] plane;
+	protected IntVar<?>[][] runway_usage;
+	
 	protected Solver solver;
 	
-	public Aircraft(int planes, int runways, int[] rw_cap, int min_time, int max_time, int open, int close){
-		solver=new Solver();
-		this.open_airport=VariableFactory.enumerated("opening_hours", open, close, solver);
-		this.nb_of_planes=planes;
-		this.open_hours=open;
-		this.close_hours=close;
-		this.parking_min_time=min_time;
-		this.parking_max_time=max_time;
-		this.plane=new Task[this.nb_of_planes];
-		this.landing=new IntVar[this.nb_of_planes];
-		this.parking=new IntVar[this.nb_of_planes];
-		this.take_off=new IntVar[this.nb_of_planes];
-		this.nb_of_runways=runways;
-		this.runway_capacity=VariableFactory.enumeratedArray("runway_capacity", this.nb_of_runways, rw_cap, solver);
+	/**
+	 * 
+	 * @param nb_of_planes number of planes
+	 * @param runway_capacity array of capacities of all runways
+	 * @param opening_time when the airport opens
+	 * @param closing_time when the airport closes
+	 */
+	public Aircraft(Plane[] planes, int[] runway_capacity, int opening_time, int closing_time){
+		this.opening_time=opening_time;
+		this.closing_time=closing_time;
+		this.runway_max_capacity = runway_capacity;
+		this.planes = planes;
+		
+		this.nb_of_runways=runway_capacity.length;
+		this.nb_of_planes=planes.length;
 	}
 	
-	public void model(){
-		for(int i=0;i<this.nb_of_planes;i++){
-			landing[i]=VariableFactory.enumerated("landing"+i, open_hours, close_hours,solver);
-			parking[i]=VariableFactory.enumerated("parking"+i, parking_min_time, parking_max_time,solver);
-			take_off[i]=VariableFactory.enumerated("take_off"+i, open_hours, close_hours,solver);
-			plane[i]=VariableFactory.task(landing[i], parking[i], take_off[i]);
-			plane_weight[i]=VariableFactory.fixed("plane_weight"+i, Plane.[i], s);
-		}
-	}
+	public void model(Solver s){
+		this.plane = new Task[this.nb_of_planes];
+		
+		this.landing = new IntVar<?>[this.nb_of_planes];
+		this.parking = new IntVar<?>[this.nb_of_planes];
+		this.take_off = new IntVar<?>[this.nb_of_planes];
+		
+		this.runway_usage= new IntVar<?>[this.nb_of_runways][];
 
-	public enum Plane{
-		SMALL(1),MEDIUM(2),LARGE(3);
-		
-		private int weight;
-		private static final Map<Integer,Plane> lookup = new HashMap<Integer,Plane>();
-		
-		static {
-	        for(Plane p : EnumSet.allOf(Plane.class))
-	            lookup.put(p.getWeight(), p);
-	    }
-		
-		private Plane(int w){
-			this.weight=w;
+		for(int i=0;i<this.nb_of_planes;i++){
+			landing[i] = VariableFactory.enumerated("landing"+i, planes[i].getLanding(), planes[i].getTakeoff(), s);
+			take_off[i] = VariableFactory.enumerated("takeoff"+i, planes[i].getLanding(), planes[i].getTakeoff(), s);
+			parking[i] = VariableFactory.enumerated("parking"+i, 0, planes[i].getDuration(), s);
+			plane[i]=VariableFactory.task(landing[i], parking[i], take_off[i]);
 		}
-		
-		public int getWeight() {
-			 return weight;
-		}
-		
-		public static Plane getPlane(int weight) { 
-		        return lookup.get(weight); 
+		for(int i = 0 ; i < this.nb_of_runways;i++){
+			this.runway_usage[i]=VariableFactory.enumeratedArray("runway_usage"+i, this.closing_time-this.opening_time, 0, runway_max_capacity[i], s);
+			s.post(IntConstraintFactory.cumulative(plane, Plane.weights(planes), runway_max_capacity));
 		}
 	}
 	
+	public void solve() {
+		solver=new Solver();
+		model(solver);
+		solver.findSolution();
+	}
 }
