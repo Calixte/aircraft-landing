@@ -3,7 +3,7 @@
  */
 package generator;
 
-import Plane;
+import model.Plane;
 
 /**
  * @author Adrien
