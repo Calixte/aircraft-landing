@@ -34,17 +34,25 @@ public class DataGenerator {
 	public Plane[] generateLinear(int numberOfFlights, int weightDifficulty) {
 		Plane[] planes = new Plane[numberOfFlights];
 		int window = LANDING_WINDOW_END / numberOfFlights;
-		for (int i = 0; i < LANDING_WINDOW_END; i ++) {
+		for (int i = 0; i < numberOfFlights; i ++) {
 			switch (weightDifficulty) {
 			case EASY:
-				planes[i] = new Plane(1,i*window,i*window + MAX_PARKING_TIME);
+				planes[i] = new Plane(Plane.LIGHT,i*window,Math.min(i*window + MAX_PARKING_TIME, HIGHEST_TIME));
 				break;
 
 			default:
-				planes[i] = new Plane(1,i*window,i*window + MAX_PARKING_TIME);
+				planes[i] = new Plane(1,i*window,Math.min(i*window + MAX_PARKING_TIME, HIGHEST_TIME));
 				break;
 			}
 		}
 		return planes;
+	}
+	
+	public static void main(String[] args) {
+		DataGenerator generator = new DataGenerator();
+		Plane[] planes = generator.generateLinear(5, EASY);
+		for (Plane plane : planes) {
+			System.out.println(plane);
+		}
 	}
 }

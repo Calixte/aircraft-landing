@@ -61,4 +61,9 @@ public class Plane{
 		}
 		return weights;
 	}
+	
+	@Override
+	public String toString() {
+		return "Plane[weight : " + weight + ", landing : " + landing + ", takeoff : " + takeoff + "]";
+	}
 }
