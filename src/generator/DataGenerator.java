@@ -50,7 +50,7 @@ public class DataGenerator {
 	
 	public static void main(String[] args) {
 		DataGenerator generator = new DataGenerator();
-		Plane[] planes = generator.generateLinear(5, EASY);
+		Plane[] planes = generator.generateLinear(25, EASY);
 		for (Plane plane : planes) {
 			System.out.println(plane);
 		}
