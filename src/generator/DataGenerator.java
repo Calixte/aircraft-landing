@@ -73,6 +73,18 @@ public class DataGenerator {
 				planes[i] = new Plane(Plane.LIGHT, landing, Math.min(landing
 						+ MAX_PARKING_TIME, HIGHEST_TIME));
 				break;
+			case MID:
+				int weight = random.nextInt(2) + 1;
+				landing = random.nextInt(LANDING_WINDOW_END + 1);
+				planes[i] = new Plane(weight, landing, Math.min(landing
+						+ MAX_PARKING_TIME, HIGHEST_TIME));
+				break;
+			case HARD:
+				weight = random.nextInt(3) + 1;
+				landing = random.nextInt(LANDING_WINDOW_END + 1);
+				planes[i] = new Plane(weight, landing, Math.min(landing
+						+ MAX_PARKING_TIME, HIGHEST_TIME));
+				break;
 
 			default:
 				landing = random.nextInt(LANDING_WINDOW_END + 1);
@@ -87,7 +99,7 @@ public class DataGenerator {
 
 	public static void main(String[] args) {
 		DataGenerator generator = new DataGenerator();
-		Plane[] planes = generator.generateRandom(5, EASY);
+		Plane[] planes = generator.generateRandom(10, HARD);
 		for (Plane plane : planes) {
 			System.out.println(plane);
 		}
