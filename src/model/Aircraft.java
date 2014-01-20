@@ -1,8 +1,4 @@
 package model;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.variables.IntVar;
