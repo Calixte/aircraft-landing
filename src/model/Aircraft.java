@@ -75,10 +75,10 @@ public class Aircraft {
 		}
 		
 		s.set(new StrategiesSequencer(
-				IntStrategyFactory.random(ArrayUtils.flatten(plane_weight), System.currentTimeMillis()),
-				IntStrategyFactory.random(parking, System.currentTimeMillis()),
-				IntStrategyFactory.random(landing, System.currentTimeMillis()),
-				IntStrategyFactory.random(take_off, System.currentTimeMillis())
+				IntStrategyFactory.inputOrder_InDomainMin(landing),
+				IntStrategyFactory.inputOrder_InDomainMin(parking),
+				IntStrategyFactory.inputOrder_InDomainMin(take_off),
+				IntStrategyFactory.random(ArrayUtils.flatten(plane_weight), System.currentTimeMillis())
 				));
 	}
 	

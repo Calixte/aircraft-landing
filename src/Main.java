@@ -4,7 +4,7 @@ import model.Plane;
 
 public class Main {
 	public static void main(String[] args) {
-		Plane[] planes = new DataGenerator().generateLinear(20, DataGenerator.MID);
-		new Aircraft(planes, new int[]{6, 5, 3, 2, 7, 6, 4, 1, 1}, 1200).solve();
+		Plane[] planes = new DataGenerator().generateRandom(100, DataGenerator.HARD);
+		new Aircraft(planes, new int[]{6, 5, 3, 3, 3, 4, 2, 1, 1}, 1200).solve();
 	}
 }
