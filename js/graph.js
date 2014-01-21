@@ -5,27 +5,37 @@ google.load('visualization', '1.0', {'packages':['corechart']});
 google.setOnLoadCallback(chargeFrames);
 
 function chargeFrames(){
-	console.log("test");
+	var runways = document.getElementsByClassName("runway");
+	var i;
+	for (i=0; i<runways.length; i++){
+		ajaxRequest("GET","/graph/"+i, "",function() {        
+	        return function(response){
+	                if(!response){
+	                        console.log("fail");
+	                        return;
+	                }
+	                console.log(response);
+	                var schedule = JSON.parse(response);
+	                //var data = parseData(schedule);
+	                //var chart = drawChart(runways[i], 'Piste d\'atterissage', data);
+	        }
+		}());
+	}
+	
 }
 
 function parseData(json){
-        drawFrame(json.chart_id,json.id_column, json.priority);
-        var all_data=json.data;
-        var rows= new Array();
-        $.each(all_data, function(key,val){
-                var row = new Array();
-                $.each(val, function(key2,val2){
-                        row.push(val2);
-                });
-                rows.push(row);
-        });
-        var data = formatData(json.columns, rows);
-        drawChart(json.chart_id,
-                          json.title, 
-                          json.columns, 
-                          data, 
-                          json.typeofchart
-                  );
+	drawFrame(json.chart_id,json.id_column, json.priority);
+	var all_data=json.data;
+	var rows= new Array();
+	$.each(all_data, function(key,val){	
+	        var row = new Array();
+	        $.each(val, function(key2,val2){
+	                row.push(val2);
+	        });
+	        rows.push(row);
+	});
+	var data = formatData(json.columns, rows);
 }
 
 function formatData(columnHeader, data) {
@@ -45,55 +55,40 @@ function formatData(columnHeader, data) {
         return data;
 }
 
-function drawFrame(id_chart, id_column){
-        if(id_column=='1'){
-                console.log(id_chart)
-                $("#now").append("<div class='frame'><button class='close' title='retirer des favoris' onclick='remove_(this);'></button><div class='box'><div class='chart' id='"+id_chart+"'></div></div></div>");
-        }
-        else if (id_column=='2'){
-                $('#asap').append("<div class='frame'><button class='close' title='retirer des favoris' onclick='remove_(this);'></button><div class='box'><div class='chart' id='"+id_chart+"'></div></div></div>");                
-        }
-        else if (id_column=='3'){
-                $('#shot').append("<div class='frame'><button class='close' title='retirer des favoris' onclick='remove_(this);'></button><div class='box'><div class='chart' id='"+id_chart+"'></div></div></div>");
-        }
+function drawChart(container,title,data) {
+    var options = {'title': title, 
+                    legend: {position : 'in'}, 
+                    'backgroundColor': { 'fill':'transparent' },
+                    'chartArea':{width:"80%",height:"80%"}};        
+    var chart = new google.visualization.TimeLine(container);
+    var dataTable = new google.visualization.arrayToDataTable(data);
+    chart.draw(dataTable, options);
 }
 
-function drawChart(id_chart,title,columns,data,type_of_chart) {
-    var options;
-        var chart;
-        switch(type_of_chart) {
-                case "LineChart":
-                        options = {'title': title, 
-                                                legend: {position : 'in'}, 
-                                                'backgroundColor': { 'fill':'transparent' },
-                                                'trendlines': {0:{},1:{}},
-                                                'chartArea':{width:"80%",height:"80%"}};        
-                        chart = new google.visualization.LineChart(document.getElementById(id_chart));
-                        break;
-                case "BarChart":
-                    options = {'title': title,
-	                            legend : {position : 'in'},
-	                            'isStacked':'true',
-	                            colors:['blue','red','#AAAAAA'],
-	                            legend: 'none', 
-	                            'backgroundColor': { 'fill':'transparent' },
-	                            'chartArea':{width:"80%",height:"80%"}};        
-                        chart = new google.visualization.BarChart(document.getElementById(id_chart));
-                        break;
-                case "BubbleChart":
-                        options={'title': title, 
-                                                legend: {position : 'in'}, 
-                                                colorAxis: {colors: ['green', 'yellow', 'red'], minValue : 0, maxValue : 1000},
-                                                hAxis : {maxValue : 1000},
-                                                vAxis : {maxValue : 1000},
-                                                sizeAxis : {minSize :6, maxSize : 6},
-                                                'backgroundColor': { 'fill':'transparent' },
-                                                'chartArea':{width:"80%",height:"80%"}};
-                        chart = new google.visualization.BubbleChart(document.getElementById(id_chart));
-                        break;
+function ajaxRequest(method, url, data, onSuccess) {
+        var xhr_object;
+        if(window.XMLHttpRequest) // FIREFOX
+                xhr_object = new XMLHttpRequest();
+        else if(window.ActiveXObject) // IE
+                xhr_object = new ActiveXObject("Microsoft.XMLHTTP");
+        else
+                return(false);
+        xhr_object.open(method, url, true);
+        if(method=="POST"){
+                xhr_object.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhr_object.send(data);        
         }
-    var dataTable = new google.visualization.arrayToDataTable(data);
-           chart.draw(dataTable, options);
+        else{
+                xhr_object.send();
+        }
+        xhr_object.onreadystatechange = function() {
+                if(xhr_object.readyState == 4) {
+                        if (xhr_object.status == 200) {
+                                onSuccess(xhr_object.responseText);
+                        }
+                }
+        }
+        
 }
 
 function resize(){
