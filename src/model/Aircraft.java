@@ -1,9 +1,17 @@
 package model;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
+import solver.search.strategy.IntStrategyFactory;
+import solver.search.strategy.decision.Decision;
+import solver.search.strategy.strategy.AbstractStrategy;
+import solver.search.strategy.strategy.Assignment;
+import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.variables.IntVar;
 import solver.variables.Task;
+import solver.variables.Variable;
 import solver.variables.VariableFactory;
+import util.tools.ArrayUtils;
 
 
 public class Aircraft {
@@ -18,9 +26,7 @@ public class Aircraft {
 	protected IntVar<?>[] landing;
 	protected IntVar<?>[] take_off;
 	protected Task[] plane;
-	protected IntVar<?>[][] runway_usage;
-	protected IntVar<?>[][] runway_usage_t;
-	protected IntVar<?>[] which_runway;
+	protected IntVar<?>[][] plane_weight;
 	
 	protected Solver solver;
 	
@@ -49,31 +55,46 @@ public class Aircraft {
 		for(int i=0;i<this.nb_of_planes;i++){
 			landing[i] = VariableFactory.enumerated("landing"+i, planes[i].getLanding(), planes[i].getTakeoff(), s);
 			take_off[i] = VariableFactory.enumerated("takeoff"+i, planes[i].getLanding(), planes[i].getTakeoff(), s);
-			parking[i] = VariableFactory.enumerated("parking"+i, 0, planes[i].getDuration(), s);
-			plane[i]=VariableFactory.task(landing[i], parking[i], take_off[i]);
+			parking[i] = VariableFactory.enumerated("parking"+i, new int[]{30}, s);
+			plane[i] = VariableFactory.task(landing[i], parking[i], take_off[i]);
 		}
-		
-		this.which_runway = VariableFactory.enumeratedArray("which_runway", nb_of_planes, 1, nb_of_runways, s);
-        this.runway_usage= new IntVar<?>[this.nb_of_runways][];
-
-		for(int i = 0 ; i < this.nb_of_runways;i++){
-			this.runway_usage[i]=VariableFactory.enumeratedArray("runway_usage"+i, this.closing_time, 0, runway_max_capacity[i], s);
-		}
-		runway_usage_t = new IntVar<?>[this.closing_time][nb_of_runways];
-		for(int i = 0 ; i < this.nb_of_planes ; i++) {
-			for(int j = 0 ; j < this.closing_time ; j++) {
-				runway_usage_t[j][i] = runway_usage[i][j];
+				
+		this.plane_weight = new IntVar[nb_of_planes][nb_of_runways];
+		for(int i = 0 ; i < nb_of_runways ; i++) {
+			for(int j = 0 ; j < nb_of_planes ; j++) {
+				this.plane_weight[j][i] = VariableFactory.enumerated("pw"+i, new int[]{0, planes[j].getWeight()}, s);
 			}
 		}
-		for(int i = 0 ; i < closing_time ; i++) {
-			s.post(IntConstraintFactory.bin_packing(which_runway, Plane.weights(planes), runway_usage_t[i], 0));
+		
+		for(int i = 0 ; i < nb_of_planes ; i++) {
+			s.post(IntConstraintFactory.count(planes[i].getWeight(), this.plane_weight[i], VariableFactory.fixed(1, s)));
 		}
-
+		
+		for(int i = 0 ; i < this.nb_of_runways ; i++) {
+			s.post(IntConstraintFactory.cumulative(plane, ArrayUtils.transpose(plane_weight)[i], VariableFactory.fixed(runway_max_capacity[i], s)));
+		}
+		
+		s.set(new StrategiesSequencer(
+				IntStrategyFactory.inputOrder_InDomainMin(landing),
+				IntStrategyFactory.inputOrder_InDomainMin(parking),
+				IntStrategyFactory.inputOrder_InDomainMin(take_off),
+				IntStrategyFactory.random(ArrayUtils.flatten(plane_weight), System.currentTimeMillis())
+				));
 	}
 	
 	public void solve() {
 		solver=new Solver();
 		model(solver);
 		solver.findSolution();
+		System.out.println(solver.getMeasures());
+		for(int i = 0 ; i < nb_of_planes ; i++) {
+			System.out.print(landing[i].getLB() + "\t" + take_off[i].getLB() + "\t" + planes[i].getWeight());
+			for(int j = 0 ; j < plane_weight[i].length ; j++) {
+				if(plane_weight[i][j].getLB() != 0) {
+					System.out.print("\t" + j);
+				}
+			}
+			System.out.println();
+		}
 	}
 }

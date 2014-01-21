@@ -1,5 +1,9 @@
 package model;
 
+import solver.Solver;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
+
 public class Plane{
 	
 	public static final int LIGHT = 1;
@@ -54,10 +58,10 @@ public class Plane{
 		return takeoff-landing;
 	}
 	
-	public static int[] weights(Plane[] planes) {
-		int[] weights = new int[planes.length];
+	public static IntVar<?>[] weights(Plane[] planes, Solver s) {
+		IntVar<?>[] weights = new IntVar[planes.length];
 		for(int i = 0 ; i < planes.length ; i++) {
-			weights[i] = planes[i].getWeight();
+			weights[i] = VariableFactory.fixed(planes[i].getWeight(), s);
 		}
 		return weights;
 	}
