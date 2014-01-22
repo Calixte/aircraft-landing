@@ -62,7 +62,11 @@ public class MainFrame {
 			
 			@Override
 			public Object handle(Request request, Response response) {
-				return "{\"json\":\"test\"}";
+				return "{\"data\":["
+						+ "[\"Position\",\"Flight\", \"landing\", \"take off\"],"
+						+ "[\"1\",\"BA123\", 0, 35 ],"
+						+ "[\"2\",\"BA123\", 20, 60]"
+						+ "]}";
 			}
 		});
 

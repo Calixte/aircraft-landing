@@ -1,25 +1,27 @@
 // Load the Visualization API and the piechart package.
-google.load('visualization', '1.0', {'packages':['corechart']});
+google.load('visualization', '1.0', {'packages':['timeline']});
 
 // Set a callback to run when the Google Visualization API is loaded.
 google.setOnLoadCallback(chargeFrames);
 
 function chargeFrames(){
 	var runways = document.getElementsByClassName("runway");
-	var i;
+	var i = 0;
 	for (i=0; i<runways.length; i++){
-		ajaxRequest("GET","/graph/"+i, "",function() {        
+		ajaxRequest("GET","/graph/" + i, "",function(j) {        
 	        return function(response){
 	                if(!response){
 	                        console.log("fail");
 	                        return;
 	                }
 	                console.log(response);
-	                var schedule = JSON.parse(response);
+	                var schedule = JSON.parse(response)['data'];
+	                console.log(schedule);
+	                console.log(runways[j]);
 	                //var data = parseData(schedule);
-	                //var chart = drawChart(runways[i], 'Piste d\'atterissage', data);
+	                var chart = drawChart(runways[j], 'Piste d\'atterissage', schedule);
 	        }
-		}());
+		}(i));
 	}
 	
 }
@@ -59,8 +61,8 @@ function drawChart(container,title,data) {
     var options = {'title': title, 
                     legend: {position : 'in'}, 
                     'backgroundColor': { 'fill':'transparent' },
-                    'chartArea':{width:"80%",height:"80%"}};        
-    var chart = new google.visualization.TimeLine(container);
+                    'chartArea':{width:"80%",height:"80%"}};
+    var chart = new google.visualization.Timeline(container);
     var dataTable = new google.visualization.arrayToDataTable(data);
     chart.draw(dataTable, options);
 }
