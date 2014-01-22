@@ -8,24 +8,38 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.apache.log4j.chainsaw.Main;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 public class MainFrame {
+	
+	public static final String TITLE = "<title>Aircraft landing</title>";
+	public static final String STYLESHEET_ROUTE = "/css/stylesheet.css";
+	public static final String GRAPH_SCRIPT_ROUTE = "/js/graph.js";
 
 	private static final String HEADER = "<!DOCTYPE html>"
 			+ "<html>"
 			+ "<head>"
-			+ "<title>Aircraft Landing</title>"
+			+ TITLE
 			+ "<meta charset=\"utf-8\" />"
-			+ "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/layout.css\">"
+			+ "<link rel=\"stylesheet\" type=\"text/css\" href=" + STYLESHEET_ROUTE + ">"
 			+ "<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>"
-			+ "<script type=\"text/javascript\" src=\"js/graph.js\"></script>"
+			+ "<script type=\"text/javascript\" src=" + GRAPH_SCRIPT_ROUTE + "></script>"
 			+ "</head>";
 
 	public MainFrame() {
 
+	}
+	
+	public String createRunway(int number) {
+		String div = "<div class='runway'> "
+				+ "<h2>Runway n°" + number + "</h2>"
+				+ "<div class='runway' id='runway_1'></div>"
+				+ "</div>";
+		return div;
 	}
 
 	public static void main(String[] args) {
@@ -35,26 +49,30 @@ public class MainFrame {
 			@Override
 			public Object handle(Request request, Response response) {
 
-				return HEADER + "<body>" + "<h1>Hello World!</h1>"
+				return HEADER + "<body>" + "<h1>Aircraft landing project</h1>"
 						+ "<div class='runway' id='runway_1'></div>"
 						+ "<div class='runway' id='runway_2'></div>"
 						+ "</body>";
 			}
 		});
 
-		get(new Route("/js/graph.js") {
+		get(new Route(MainFrame.GRAPH_SCRIPT_ROUTE) {
 
 			@Override
 			public Object handle(Request request, Response response) {
-				return sendFile(new File("js/graph.js"), response);
+				String answer = parseFile(new File("js/graph.js"));
+				response.type("text/javascript");
+				return answer;
 			}
 		});
 
-		get(new Route("/css/layout.css") {
+		get(new Route(MainFrame.STYLESHEET_ROUTE) {
 
 			@Override
 			public Object handle(Request request, Response response) {
-				return "h1 {color:red;}";
+				String stylesheet = parseFile(new File("css/stylesheet.css"));
+				response.type("text/css");
+				return stylesheet;
 			}
 		});
 		
@@ -72,7 +90,7 @@ public class MainFrame {
 
 	}
 
-	public static String sendFile(File f, Response response) {
+	public static String parseFile(File f) {
 		String result = "";
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(f));
@@ -83,13 +101,10 @@ public class MainFrame {
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		response.type("text/javascript");
 		return result;
 	}
 

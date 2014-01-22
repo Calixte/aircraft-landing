@@ -14,10 +14,7 @@ function chargeFrames(){
 	                        console.log("fail");
 	                        return;
 	                }
-	                console.log(response);
 	                var schedule = JSON.parse(response)['data'];
-	                console.log(schedule);
-	                console.log(runways[j]);
 	                //var data = parseData(schedule);
 	                var chart = drawChart(runways[j], 'Piste d\'atterissage', schedule);
 	        }
