@@ -1,15 +1,10 @@
 package model;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
-import solver.exception.ContradictionException;
 import solver.search.strategy.IntStrategyFactory;
-import solver.search.strategy.decision.Decision;
-import solver.search.strategy.strategy.AbstractStrategy;
-import solver.search.strategy.strategy.Assignment;
 import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.variables.IntVar;
 import solver.variables.Task;
-import solver.variables.Variable;
 import solver.variables.VariableFactory;
 import util.tools.ArrayUtils;
 
