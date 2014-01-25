@@ -1,0 +1,19 @@
+<body>
+	<h1>Aircraft landing project</h1>
+	<p>Bienvenu dans le projet de gestion d'un aéroport.</p>
+	<p>À partir de cette interface, vous pouvez générer des 
+		données linéaires dans le temps ou aléatoire puis lancer 
+		la résolution pour que l'algorithme calcul les décollages 
+		et atterrissages optimaux selon vos contraintes.</p>
+		<p>Générer des données : 
+			<form method="GET" action="generate">
+			<select name="generatorType">
+				<option value=linear>Linéaire</option>
+				<option value=random>Aléatoire</option>
+			</select>
+				<input type="submit" value="Générer et Optimiser">
+		</form>
+		</p>
+			<div class='runway' id='runway_1'></div>
+			<div class='runway' id='runway_2'></div>
+</body>

@@ -1,8 +1,12 @@
 h1 {
-	color: #5A5E6B;
+	color: #5A5E6B !important;
 }
 h2 {
 	color: #1E7FCB;
+}
+body {
+	margin: auto !important;
+	width: 70%;
 }
 .btn {
 	margin-left:5px;

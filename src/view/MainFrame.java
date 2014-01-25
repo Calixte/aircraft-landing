@@ -15,7 +15,9 @@ import spark.Route;
 public class MainFrame {
 
 	public static final String TITLE = "<title>Aircraft landing</title>";
-	public static final String STYLESHEET_ROUTE = "/css/stylesheet.css";
+	public static final String INDEX_ROUTE = "index.html";
+	public static final String STYLESHEET_ROUTE = "css/stylesheet.css";
+	public static final String BOOTSTRAP_ROUTE = "css/bootstrap.min.css";
 	public static final String GRAPH_SCRIPT_ROUTE = "/js/graph.js";
 
 	private static final String HEADER = "<!DOCTYPE html>"
@@ -27,7 +29,7 @@ public class MainFrame {
 			+ STYLESHEET_ROUTE
 			+ ">"
 			+ "<link rel=\"stylesheet\" type=\"text/css\" href="
-			+ "css/bootstrap.min.css"
+			+ BOOTSTRAP_ROUTE
 			+ ">"
 			+ "<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>"
 			+ "<script type=\"text/javascript\" src=" + GRAPH_SCRIPT_ROUTE
@@ -50,24 +52,10 @@ public class MainFrame {
 
 			@Override
 			public Object handle(Request request, Response response) {
-
-				return HEADER
-						+ "<body>"
-						+ "<h1>Aircraft landing project</h1>"
-						+ "<p>Bienvenu dans le projet de gestion d'un aéroport.</p>"
-						+ "<p>À partir de cette interface, vous pouvez générer des "
-						+ "données linéaires dans le temps ou aléatoire puis lancer "
-						+ "la résolution pour que l'algorithme calcul les décollages "
-						+ "et atterrissages optimaux selon vos contraintes.</p>"
-						+ "<p>Générer des données : "
-						+ "<select>"
-						+ "<option value=linear>Linéaire</option>"
-						+ "<option value=random>Aléatoire</option>"
-						+ "</select>"
-						+ "<button type=button class=\"btn btn-primary\">Générer</button></p>"
-						+ "<div class='runway' id='runway_1'></div>"
-						+ "<div class='runway' id='runway_2'></div>"
-						+ "</body>";
+				String page = HEADER;
+				page += parseFile(new File(INDEX_ROUTE));
+				response.type("text/html");
+				return page;
 			}
 		});
 
@@ -85,16 +73,16 @@ public class MainFrame {
 
 			@Override
 			public Object handle(Request request, Response response) {
-				String stylesheet = parseFile(new File("css/stylesheet.css"));
+				String stylesheet = parseFile(new File(STYLESHEET_ROUTE));
 				response.type("text/css");
 				return stylesheet;
 			}
 		});
-		get(new Route("/css/bootstrap.min.css") {
+		get(new Route(MainFrame.BOOTSTRAP_ROUTE) {
 
 			@Override
 			public Object handle(Request request, Response response) {
-				String stylesheet = parseFile(new File("css/bootstrap.min.css"));
+				String stylesheet = parseFile(new File(BOOTSTRAP_ROUTE));
 				response.type("text/css");
 				return stylesheet;
 			}
