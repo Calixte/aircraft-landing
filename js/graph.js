@@ -5,7 +5,7 @@ google.load('visualization', '1.0', {'packages':['timeline']});
 google.setOnLoadCallback(chargeFrames);
 
 function chargeFrames(){
-	var runways = document.getElementsByClassName("runway");
+	var runways = document.getElementsByClassName("runwayGraph");
 	var i = 0;
 	for (i=0; i<runways.length; i++){
 		ajaxRequest("GET","/graph/" + i, "",function(j) {        

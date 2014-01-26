@@ -58,6 +58,20 @@ public class Plane{
 		return takeoff-landing;
 	}
 	
+	/**
+	 * @param takeoff the takeoff to set
+	 */
+	public void setTakeoff(int takeoff) {
+		this.takeoff = takeoff;
+	}
+
+	/**
+	 * @param landing the landing to set
+	 */
+	public void setLanding(int landing) {
+		this.landing = landing;
+	}
+
 	public static IntVar<?>[] weights(Plane[] planes, Solver s) {
 		IntVar<?>[] weights = new IntVar[planes.length];
 		for(int i = 0 ; i < planes.length ; i++) {

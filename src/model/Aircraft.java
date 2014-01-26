@@ -92,4 +92,15 @@ public class Aircraft {
 			System.out.println();
 		}
 	}
+	
+	public void updatePlaneArray() {
+		for (int i = 0; i < nb_of_planes; i++) {
+			this.planes[i].setLanding(landing[i].getLB());
+			this.planes[i].setTakeoff(take_off[i].getLB());
+		}
+	}
+	
+	public int getNbOfRunways() {
+		return this.nb_of_runways;
+	}
 }

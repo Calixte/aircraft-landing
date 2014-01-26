@@ -13,8 +13,6 @@ import model.Plane;
 
 public class Main {
 	public static void main(String[] args) {
-		Plane[] planes = new DataGenerator().generateRandom(100, DataGenerator.HARD);
-		new Aircraft(planes, new int[]{6, 5, 3, 3, 3, 4, 2, 1, 1}, 1200).solve();
 		
 		get(new Route("/") {
 
@@ -23,6 +21,39 @@ public class Main {
 				String page = MainFrame.HEADER;
 				page += MainFrame.parseFile(new File(MainFrame.INDEX_ROUTE));
 				response.type("text/html");
+				return page;
+			}
+		});
+		
+		get(new Route("/generate") {
+			
+			@Override
+			public Object handle(Request request, Response response) {
+				DataGenerator generator = new DataGenerator();
+				String type = request.queryParams("generatorType");
+				int difficulty = Integer.parseInt(request.queryParams("generatorDifficulty"));
+				int numberOfFlights = Integer.parseInt(request.queryParams("generatorNbPlanes"));
+				Plane[] planes = new Plane[numberOfFlights];
+				switch(type) {
+				case DataGenerator.LINEAR:
+					planes = generator.generateLinear(numberOfFlights, difficulty);
+					break;
+				case DataGenerator.RANDOM:
+					planes = generator.generateRandom(numberOfFlights, difficulty);
+				}
+				Aircraft aircraft = new Aircraft(planes, new int[]{6, 5, 3, 3, 3, 4, 2, 1, 1}, 1200);
+				aircraft.solve();
+				aircraft.updatePlaneArray();
+				int nbOfRunways = aircraft.getNbOfRunways();
+				
+				String page = MainFrame.HEADER;
+				page += MainFrame.parseFile(new File(MainFrame.INDEX_ROUTE));
+				for (int i=0; i<nbOfRunways; i++) {
+					page += MainFrame.createRunway(i);
+				}
+				page += "</body>";
+				response.type("text/html");
+				
 				return page;
 			}
 		});

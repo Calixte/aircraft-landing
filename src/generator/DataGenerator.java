@@ -32,6 +32,9 @@ public class DataGenerator {
 	public static final int EASY = 10;
 	public static final int MID = 11;
 	public static final int HARD = 12;
+	
+	public static final String LINEAR = "linear";
+	public static final String RANDOM = "random";
 
 	public Plane[] generateLinear(int numberOfFlights, int difficulty) {
 		Plane[] planes = new Plane[numberOfFlights];
