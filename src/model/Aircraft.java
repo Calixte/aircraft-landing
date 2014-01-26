@@ -81,6 +81,10 @@ public class Aircraft {
 		solver=new Solver();
 		model(solver);
 		solver.findSolution();
+		this.prettyOut();
+	}
+	
+	public void prettyOut() {
 		System.out.println(solver.getMeasures());
 		for(int i = 0 ; i < nb_of_planes ; i++) {
 			System.out.print(landing[i].getLB() + "\t" + take_off[i].getLB() + "\t" + planes[i].getWeight());

@@ -12,6 +12,9 @@ import model.Aircraft;
 import model.Plane;
 
 public class Main {
+	
+	private static Plane[] planes;
+	
 	public static void main(String[] args) {
 		
 		get(new Route("/") {
@@ -32,19 +35,22 @@ public class Main {
 				DataGenerator generator = new DataGenerator();
 				String type = request.queryParams("generatorType");
 				int difficulty = Integer.parseInt(request.queryParams("generatorDifficulty"));
-				int numberOfFlights = Integer.parseInt(request.queryParams("generatorNbPlanes"));
-				Plane[] planes = new Plane[numberOfFlights];
+				int nbOfFlights = Integer.parseInt(request.queryParams("generatorNbPlanes"));
+				System.out.println("Params : " + type + ", " + difficulty + ", " + nbOfFlights);
+				planes = new Plane[nbOfFlights];
 				switch(type) {
 				case DataGenerator.LINEAR:
-					planes = generator.generateLinear(numberOfFlights, difficulty);
+					System.out.println("Through here");
+					planes = generator.generateLinear(nbOfFlights, difficulty);
 					break;
 				case DataGenerator.RANDOM:
-					planes = generator.generateRandom(numberOfFlights, difficulty);
+					planes = generator.generateRandom(nbOfFlights, difficulty);
 				}
 				Aircraft aircraft = new Aircraft(planes, new int[]{6, 5, 3, 3, 3, 4, 2, 1, 1}, 1200);
 				aircraft.solve();
 				aircraft.updatePlaneArray();
 				int nbOfRunways = aircraft.getNbOfRunways();
+				System.out.println("Number of runways : " + nbOfRunways);
 				
 				String page = MainFrame.HEADER;
 				page += MainFrame.parseFile(new File(MainFrame.INDEX_ROUTE));
