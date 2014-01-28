@@ -117,6 +117,10 @@ public class Aircraft {
 		return planes;
 	}
 	
+	public int getRunwayCapacity(int id) {
+		return runway_max_capacity[id];
+	}
+	
 	public int getNbOfRunways() {
 		return this.nb_of_runways;
 	}

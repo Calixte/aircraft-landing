@@ -1,11 +1,12 @@
 // Load the Visualization API and the piechart package.
-google.load('visualization', '1.0', {'packages':['timeline']});
+google.load('visualization', '1.0', {'packages':['timeline','corechart']});
 
 // Set a callback to run when the Google Visualization API is loaded.
 google.setOnLoadCallback(chargeFrames);
 
 function chargeFrames(){
 	var runways = document.getElementsByClassName("runwayGraph");
+	var weight = document.getElementsByClassName("runwayWeight");
 	var i = 0;
 	for (i=0; i<runways.length; i++){
 		ajaxRequest("GET","/graph/" + i, "",function(j) {        
@@ -14,52 +15,28 @@ function chargeFrames(){
 	                        console.log("fail");
 	                        return;
 	                }
-	                var schedule = JSON.parse(response)['data'];
-	                var chart = drawChart(runways[j], 'Piste d\'atterissage', schedule);
+	                var graphs = JSON.parse(response)['graphs'];
+	                drawChart(runways[j], 'Piste d\'atterissage', graphs[0]['Timeline'],'Timeline');
+					drawChart(weight[j], 'Charge sur la piste', graphs[1]['LineChart'],'LineChart');
 	        }
 		}(i));
 	}
-	
 }
 
-function parseData(json){
-	drawFrame(json.chart_id,json.id_column, json.priority);
-	var all_data=json.data;
-	var rows= new Array();
-	$.each(all_data, function(key,val){	
-	        var row = new Array();
-	        $.each(val, function(key2,val2){
-	                row.push(val2);
-	        });
-	        rows.push(row);
-	});
-	var data = formatData(json.columns, rows);
-}
-
-function formatData(columnHeader, data) {
-        for (var i=0;i<columnHeader.length;i++) {
-                for (var j=0;j<data.length;j++) {
-                        if (columnHeader[i] == "date") {
-                                data[j][i] = new Date(data[j][i]);
-                        } else {
-                                var value = parseFloat(data[j][i]);
-                                if(!isNaN(value)) {
-                                        data[j][i] = value;
-                                }
-                        }
-                }
-        }
-        data.unshift(columnHeader);
-        return data;
-}
-
-function drawChart(container,title,data) {
+function drawChart(container, title, data, typeOfChart) {
     var options = {'title': title, 
                     legend: {position : 'in'}, 
                     'backgroundColor': { 'fill':'transparent' },
-                    'chartArea':{width:"50%",height:"50%"},
-                    'height':175};
-    var chart = new google.visualization.Timeline(container);
+                    'chartArea':{width:"80%",height:"80%"}};
+    var chart;
+	switch(typeOfChart) {
+	case 'Timeline':
+		chart = new google.visualization.Timeline(container);
+		break;
+	case 'LineChart':
+		chart = new google.visualization.LineChart(container);
+		break;
+	} 
     var dataTable = new google.visualization.arrayToDataTable(data);
     chart.draw(dataTable, options);
 }
@@ -88,8 +65,4 @@ function ajaxRequest(method, url, data, onSuccess) {
                 }
         }
         
-}
-
-function resize(){
-  chart.draw(data, options);        
 }

@@ -41,12 +41,9 @@ public class Main {
 						.queryParams("generatorDifficulty"));
 				int nbOfFlights = Integer.parseInt(request
 						.queryParams("generatorNbPlanes"));
-				System.out.println("Params : " + type + ", " + difficulty
-						+ ", " + nbOfFlights);
 				planes = new Plane[nbOfFlights];
 				switch (type) {
 				case DataGenerator.LINEAR:
-					System.out.println("Through here");
 					planes = generator.generateLinear(nbOfFlights, difficulty);
 					break;
 				case DataGenerator.RANDOM:
@@ -106,18 +103,31 @@ public class Main {
 			@Override
 			public Object handle(Request request, Response response) {
 				int id = Integer.parseInt(request.params(":id"));
+				int runwayCapacity = aircraft.getRunwayCapacity(id);
 				List<Plane> planes = aircraft.getPlaneForRunway(id);
-				String data = "{\"data\" : [[\"Position\",\"Flight\", \"landing\", \"take off\"],";
+				String data = "{\"graphs\":[{\"Timeline\" : [[\"Position\",\"Flight\", \"landing\", \"take off\"],";
 				for (int i = 0; i < planes.size(); i++) {
-					data += "[\"Runway n°" + (id+1) + "\",\"AF" + (i + id) + "\", "
-							+ planes.get(i).getLanding() + ", "
+					data += "[\"Runway n°" + (id + 1) + "\",\"AF" + (i + id)
+							+ "\", " + planes.get(i).getLanding() + ", "
 							+ planes.get(i).getTakeoff() + "],";
 				}
 				data = data.substring(0, data.length() - 1);
-				data += ",[\"Runway n°" + (id+1) + "\",\"Fermeture\",1080,1080]]}";
-				System.out.println("Runway n°" + id);
-				System.out.println("Number of planes : " + planes.size());
-				System.out.println(data);
+				data += ",[\"Runway n°" + (id + 1)
+						+ "\",\"Fermeture\",1080,1080]]},";
+				data += "{\"LineChart\" : [[\"Time\",\"Weight\", \"Limit\"],";
+
+				for (int i = 0; i < DataGenerator.HIGHEST_TIME; i++) {
+					int weight = 0;
+					for (int j = 0; j < planes.size(); j++) {
+						Plane p = planes.get(j);
+						if (p.getLanding() < i && p.getTakeoff() > i) {
+							weight += p.getWeight();
+						}
+					}
+					data += "["+i+", "+weight+", "+runwayCapacity+"],";
+				}
+				data = data.substring(0, data.length() - 1);
+				data += "]}]}";
 				return data;
 			}
 		});
