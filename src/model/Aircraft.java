@@ -1,4 +1,7 @@
 package model;
+import java.util.ArrayList;
+import java.util.List;
+
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.search.strategy.IntStrategyFactory;
@@ -81,7 +84,7 @@ public class Aircraft {
 		solver=new Solver();
 		model(solver);
 		solver.findSolution();
-		this.prettyOut();
+		//this.prettyOut();
 	}
 	
 	public void prettyOut() {
@@ -102,6 +105,16 @@ public class Aircraft {
 			this.planes[i].setLanding(landing[i].getLB());
 			this.planes[i].setTakeoff(take_off[i].getLB());
 		}
+	}
+	
+	public List<Plane> getPlaneForRunway(int id) {
+		List<Plane> planes = new ArrayList<>();
+		for (int i=0; i<nb_of_planes; i++) {
+			if (plane_weight[i][id].getLB() != 0) {
+				planes.add(this.planes[i]);
+			}
+		}
+		return planes;
 	}
 	
 	public int getNbOfRunways() {

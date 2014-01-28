@@ -34,8 +34,7 @@ public class MainFrame {
 	}
 
 	public static String createRunway(int id) {
-		String div = "<div class='runway'> " + "<h2>Runway n°" + id
-				+ "</h2>" + "<div class='runwayGraph' id='runway_1'></div>"
+		String div = "<div class='runway'> " + "<div class='runwayGraph' id='runway_1'></div>"
 				+ "</div>";
 		return div;
 	}

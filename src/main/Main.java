@@ -1,7 +1,9 @@
 package main;
+
 import static spark.Spark.get;
 
 import java.io.File;
+import java.util.List;
 
 import spark.Request;
 import spark.Response;
@@ -12,11 +14,12 @@ import model.Aircraft;
 import model.Plane;
 
 public class Main {
-	
+
 	private static Plane[] planes;
-	
+	private static Aircraft aircraft;
+
 	public static void main(String[] args) {
-		
+
 		get(new Route("/") {
 
 			@Override
@@ -27,18 +30,21 @@ public class Main {
 				return page;
 			}
 		});
-		
+
 		get(new Route("/generate") {
-			
+
 			@Override
 			public Object handle(Request request, Response response) {
 				DataGenerator generator = new DataGenerator();
 				String type = request.queryParams("generatorType");
-				int difficulty = Integer.parseInt(request.queryParams("generatorDifficulty"));
-				int nbOfFlights = Integer.parseInt(request.queryParams("generatorNbPlanes"));
-				System.out.println("Params : " + type + ", " + difficulty + ", " + nbOfFlights);
+				int difficulty = Integer.parseInt(request
+						.queryParams("generatorDifficulty"));
+				int nbOfFlights = Integer.parseInt(request
+						.queryParams("generatorNbPlanes"));
+				System.out.println("Params : " + type + ", " + difficulty
+						+ ", " + nbOfFlights);
 				planes = new Plane[nbOfFlights];
-				switch(type) {
+				switch (type) {
 				case DataGenerator.LINEAR:
 					System.out.println("Through here");
 					planes = generator.generateLinear(nbOfFlights, difficulty);
@@ -46,20 +52,20 @@ public class Main {
 				case DataGenerator.RANDOM:
 					planes = generator.generateRandom(nbOfFlights, difficulty);
 				}
-				Aircraft aircraft = new Aircraft(planes, new int[]{6, 5, 3, 3, 3, 4, 2, 1, 1}, 1200);
+				aircraft = new Aircraft(planes, new int[] { 6, 5, 3, 3, 3, 4,
+						2, 1, 1 }, 1200);
 				aircraft.solve();
 				aircraft.updatePlaneArray();
 				int nbOfRunways = aircraft.getNbOfRunways();
-				System.out.println("Number of runways : " + nbOfRunways);
-				
+
 				String page = MainFrame.HEADER;
 				page += MainFrame.parseFile(new File(MainFrame.INDEX_ROUTE));
-				for (int i=0; i<nbOfRunways; i++) {
-					page += MainFrame.createRunway(i);
+				for (int i = 0; i < nbOfRunways; i++) {
+					page += MainFrame.createRunway(i + 1);
 				}
 				page += "</body>";
 				response.type("text/html");
-				
+
 				return page;
 			}
 		});
@@ -78,7 +84,8 @@ public class Main {
 
 			@Override
 			public Object handle(Request request, Response response) {
-				String stylesheet = MainFrame.parseFile(new File(MainFrame.STYLESHEET_ROUTE));
+				String stylesheet = MainFrame.parseFile(new File(
+						MainFrame.STYLESHEET_ROUTE));
 				response.type("text/css");
 				return stylesheet;
 			}
@@ -87,7 +94,8 @@ public class Main {
 
 			@Override
 			public Object handle(Request request, Response response) {
-				String stylesheet = MainFrame.parseFile(new File(MainFrame.BOOTSTRAP_ROUTE));
+				String stylesheet = MainFrame.parseFile(new File(
+						MainFrame.BOOTSTRAP_ROUTE));
 				response.type("text/css");
 				return stylesheet;
 			}
@@ -97,10 +105,20 @@ public class Main {
 
 			@Override
 			public Object handle(Request request, Response response) {
-				return "{\"data\":["
-						+ "[\"Position\",\"Flight\", \"landing\", \"take off\"],"
-						+ "[\"1\",\"BA123\", 0, 35 ],"
-						+ "[\"2\",\"BA123\", 20, 60]" + "]}";
+				int id = Integer.parseInt(request.params(":id"));
+				List<Plane> planes = aircraft.getPlaneForRunway(id);
+				String data = "{\"data\" : [[\"Position\",\"Flight\", \"landing\", \"take off\"],";
+				for (int i = 0; i < planes.size(); i++) {
+					data += "[\"Runway n°" + (id+1) + "\",\"AF" + (i + id) + "\", "
+							+ planes.get(i).getLanding() + ", "
+							+ planes.get(i).getTakeoff() + "],";
+				}
+				data = data.substring(0, data.length() - 1);
+				data += ",[\"Runway n°" + (id+1) + "\",\"Fermeture\",1080,1080]]}";
+				System.out.println("Runway n°" + id);
+				System.out.println("Number of planes : " + planes.size());
+				System.out.println(data);
+				return data;
 			}
 		});
 	}

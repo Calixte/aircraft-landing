@@ -15,7 +15,6 @@ function chargeFrames(){
 	                        return;
 	                }
 	                var schedule = JSON.parse(response)['data'];
-	                //var data = parseData(schedule);
 	                var chart = drawChart(runways[j], 'Piste d\'atterissage', schedule);
 	        }
 		}(i));
@@ -58,7 +57,8 @@ function drawChart(container,title,data) {
     var options = {'title': title, 
                     legend: {position : 'in'}, 
                     'backgroundColor': { 'fill':'transparent' },
-                    'chartArea':{width:"80%",height:"80%"}};
+                    'chartArea':{width:"50%",height:"50%"},
+                    'height':175};
     var chart = new google.visualization.Timeline(container);
     var dataTable = new google.visualization.arrayToDataTable(data);
     chart.draw(dataTable, options);
