@@ -14,7 +14,7 @@ import solver.variables.VariableFactory;
 import util.tools.ArrayUtils;
 
 
-public class Aircraft {
+public class CSPModel {
 	
 	protected int closing_time;
 	protected int nb_of_planes;
@@ -36,7 +36,7 @@ public class Aircraft {
 	 * @param runway_capacity array of capacities of all runways
 	 * @param closing_time when the airport closes
 	 */
-	public Aircraft(Plane[] planes, int[] runway_capacity, int closing_time){
+	public CSPModel(Plane[] planes, int[] runway_capacity, int closing_time){
 		this.closing_time=closing_time;
 		this.runway_max_capacity = runway_capacity;
 		this.planes = planes;

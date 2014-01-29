@@ -10,13 +10,13 @@ import spark.Response;
 import spark.Route;
 import view.MainFrame;
 import generator.DataGenerator;
-import model.Aircraft;
+import model.CSPModel;
 import model.Plane;
 
 public class Main {
 
 	private static Plane[] planes;
-	private static Aircraft aircraft;
+	private static CSPModel cSPModel;
 
 	public static void main(String[] args) {
 
@@ -49,11 +49,11 @@ public class Main {
 				case DataGenerator.RANDOM:
 					planes = generator.generateRandom(nbOfFlights, difficulty);
 				}
-				aircraft = new Aircraft(planes, new int[] { 6, 5, 3, 3, 3, 4,
+				cSPModel = new CSPModel(planes, new int[] { 6, 5, 3, 3, 3, 4,
 						2, 1, 1 }, 1200);
-				aircraft.solve();
-				aircraft.updatePlaneArray();
-				int nbOfRunways = aircraft.getNbOfRunways();
+				cSPModel.solve();
+				cSPModel.updatePlaneArray();
+				int nbOfRunways = cSPModel.getNbOfRunways();
 
 				String page = MainFrame.HEADER;
 				page += MainFrame.parseFile(new File(MainFrame.INDEX_ROUTE));
@@ -103,8 +103,8 @@ public class Main {
 			@Override
 			public Object handle(Request request, Response response) {
 				int id = Integer.parseInt(request.params(":id"));
-				int runwayCapacity = aircraft.getRunwayCapacity(id);
-				List<Plane> planes = aircraft.getPlaneForRunway(id);
+				int runwayCapacity = cSPModel.getRunwayCapacity(id);
+				List<Plane> planes = cSPModel.getPlaneForRunway(id);
 				String data = "{\"graphs\":[{\"Timeline\" : [[\"Position\",\"Flight\", \"landing\", \"take off\"],";
 				for (int i = 0; i < planes.size(); i++) {
 					data += "[\"Runway n°" + (id + 1) + "\",\"AF" + (i + id)
