@@ -4,6 +4,7 @@ import java.util.List;
 
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
+import solver.search.loop.monitors.SMF;
 import solver.search.strategy.IntStrategyFactory;
 import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.variables.IntVar;
@@ -83,6 +84,7 @@ public class Aircraft {
 	public void solve() {
 		solver=new Solver();
 		model(solver);
+		SMF.limitTime(solver, 10000);
 		solver.findSolution();
 		//this.prettyOut();
 	}
