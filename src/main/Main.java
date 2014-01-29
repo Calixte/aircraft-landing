@@ -54,14 +54,20 @@ public class Main {
 				cSPModel = new CSPModel(planes, new int[] { 6, 5, 3, 3, 3, 4,
 						2, 1, 1 }, 1200);
 				cSPModel.solve();
-				cSPModel.updatePlaneArray();
-				int nbOfRunways = cSPModel.getNbOfRunways();
 
 				String page = MainFrame.HEADER;
 				page += MainFrame.parseFile(new File(MainFrame.INDEX_ROUTE));
-				for (int i = 0; i < nbOfRunways; i++) {
-					page += MainFrame.createRunway(i + 1);
+				if (cSPModel.getNbSolutions() > 0) {
+					cSPModel.updatePlaneArray();
+					int nbOfRunways = cSPModel.getNbOfRunways();
+					for (int i = 0; i < nbOfRunways; i++) {
+						page += MainFrame.createRunway(i + 1);
+					}
+				} else {
+					page += "<p class=error>Nous sommes navrés, le solveur n'a pas pu trouver de solutions.</p>";
+					page += "<p class=error>Le problème est probablement trop complexe, veuillez passer à la version premium pour de meilleurs résultats.</p>";
 				}
+
 				page += "</body>";
 				response.type("text/html");
 

@@ -146,4 +146,8 @@ public class CSPModel {
 		}
 		return max;
 	}
+	
+	public long getNbSolutions() {
+		return solver.getMeasures().getSolutionCount();
+	}
 }
