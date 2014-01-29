@@ -15,6 +15,7 @@ import model.Plane;
 
 public class Main {
 
+	private static int identifier = 100;
 	private static Plane[] planes;
 	private static Aircraft aircraft;
 
@@ -35,6 +36,7 @@ public class Main {
 
 			@Override
 			public Object handle(Request request, Response response) {
+				identifier = 100;
 				DataGenerator generator = new DataGenerator();
 				String type = request.queryParams("generatorType");
 				int difficulty = Integer.parseInt(request
@@ -107,9 +109,10 @@ public class Main {
 				List<Plane> planes = aircraft.getPlaneForRunway(id);
 				String data = "{\"graphs\":[{\"Timeline\" : [[\"Position\",\"Flight\", \"landing\", \"take off\"],";
 				for (int i = 0; i < planes.size(); i++) {
-					data += "[\"Runway n°" + (id + 1) + "\",\"AF" + (i + id)
+					data += "[\"Runway n°" + (id + 1) + "\",\"BA" + identifier
 							+ "\", " + planes.get(i).getLanding() + ", "
 							+ planes.get(i).getTakeoff() + "],";
+					identifier++;
 				}
 				data = data.substring(0, data.length() - 1);
 				data += ",[\"Runway n°" + (id + 1)
