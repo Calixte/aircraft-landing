@@ -13,9 +13,14 @@ import solver.variables.Task;
 import solver.variables.VariableFactory;
 import util.tools.ArrayUtils;
 
-
+/**
+ * 
+ * @author calixtebonsart
+ *
+ * This class builds the CSP model of the problem
+ */
 public class CSPModel {
-	
+
 	protected int closing_time;
 	protected int nb_of_planes;
 	protected int nb_of_runways;
@@ -25,7 +30,10 @@ public class CSPModel {
 	protected IntVar<?>[] parking;
 	protected IntVar<?>[] landing;
 	protected IntVar<?>[] take_off;
-	protected Task[] plane;
+	protected Task[] stay;
+	/**
+	 * plane_weight[i][j] gives the weight of the plane i if i is on the runway j or 0 if not
+	 */
 	protected IntVar<?>[][] plane_weight;
 	
 	protected Solver solver;
@@ -43,39 +51,47 @@ public class CSPModel {
 		
 		this.nb_of_runways=runway_capacity.length;
 		this.nb_of_planes=planes.length;
+		this.solve();
 	}
 	
-	public void model(Solver s){
-		this.plane = new Task[this.nb_of_planes];
-		
+	/**
+	 * Build the model
+	 * @param s solver
+	 */
+	private void model(Solver s){
+		this.stay = new Task[this.nb_of_planes];
 		this.landing = new IntVar<?>[this.nb_of_planes];
 		this.parking = new IntVar<?>[this.nb_of_planes];
 		this.take_off = new IntVar<?>[this.nb_of_planes];
+		this.plane_weight = new IntVar[nb_of_planes][nb_of_runways];
 		
 		for(int i=0;i<this.nb_of_planes;i++){
+			/**
+			 * Ensure that a plane i stays parking[i] time between landing[i] and take_off[i]
+			 */
 			landing[i] = VariableFactory.enumerated("landing"+i, planes[i].getLanding(), planes[i].getTakeoff(), s);
 			take_off[i] = VariableFactory.enumerated("takeoff"+i, planes[i].getLanding(), planes[i].getTakeoff(), s);
 			parking[i] = VariableFactory.enumerated("parking"+i, new int[]{30}, s);
-			plane[i] = VariableFactory.task(landing[i], parking[i], take_off[i]);
-		}
-				
-		this.plane_weight = new IntVar[nb_of_planes][nb_of_runways];
-		for(int i = 0 ; i < nb_of_runways ; i++) {
-			for(int j = 0 ; j < nb_of_planes ; j++) {
-				this.plane_weight[j][i] = VariableFactory.enumerated("pw"+i, new int[]{0, planes[j].getWeight()}, s);
+			stay[i] = VariableFactory.task(landing[i], parking[i], take_off[i]);
+			
+			/**
+			 * Ensure plane_weight is either equal to 0 or the weight of the plane i
+			 */
+			for(int j = 0 ; j < nb_of_runways ; j++) {
+				this.plane_weight[i][j] = VariableFactory.enumerated("pw"+j+i, new int[]{0, planes[i].getWeight()}, s);
 			}
-		}
-		
-		for(int i = 0 ; i < nb_of_planes ; i++) {
+			
+			/**
+			 * Ensure that the plane i is only on one runway
+			 */
 			s.post(IntConstraintFactory.count(planes[i].getWeight(), this.plane_weight[i], VariableFactory.fixed(1, s)));
 		}
 		
-		for(int i = 0 ; i < this.nb_of_runways ; i++) {
-			s.post(IntConstraintFactory.cumulative(plane, ArrayUtils.transpose(plane_weight)[i], VariableFactory.fixed(runway_max_capacity[i], s)));
-		}
-		
+		/**
+		 * Ensure that a plane i takes off after a plane j if he landed after
+		 */
 		for(int i = 0 ; i < this.nb_of_planes ; i++) {
-			for(int j = 0 ; j < nb_of_planes ; j++) {
+			for(int j = i+1 ; j < nb_of_planes ; j++) {
 				s.post(LogicalConstraintFactory.ifThenElse(
 						IntConstraintFactory.arithm(landing[i], "<=", landing[j]), 
 						IntConstraintFactory.arithm(take_off[i], "<=", take_off[j]),
@@ -83,6 +99,16 @@ public class CSPModel {
 			}
 		}
 		
+		/**
+		 * Ensure that the cumulated weights of all planes on runway i does not exceed its capacity
+		 */
+		for(int i = 0 ; i < this.nb_of_runways ; i++) {
+			s.post(IntConstraintFactory.cumulative(stay, ArrayUtils.transpose(plane_weight)[i], VariableFactory.fixed(runway_max_capacity[i], s)));
+		}
+		
+		/**
+		 * Strategy
+		 */
 		s.set(new StrategiesSequencer(
 				IntStrategyFactory.inputOrder_InDomainMin(landing),
 				IntStrategyFactory.inputOrder_InDomainMin(parking),
@@ -91,27 +117,19 @@ public class CSPModel {
 				));
 	}
 	
-	public void solve() {
+	/**
+	 * Instantiate and launch the solver
+	 */
+	private void solve() {
 		solver=new Solver();
 		model(solver);
 		SMF.limitTime(solver, 10000);
 		solver.findSolution();
-		//this.prettyOut();
 	}
-	
-	public void prettyOut() {
-		System.out.println(solver.getMeasures());
-		for(int i = 0 ; i < nb_of_planes ; i++) {
-			System.out.print(landing[i].getLB() + "\t" + take_off[i].getLB() + "\t" + planes[i].getWeight());
-			for(int j = 0 ; j < plane_weight[i].length ; j++) {
-				if(plane_weight[i][j].getLB() != 0) {
-					System.out.print("\t" + j);
-				}
-			}
-			System.out.println();
-		}
-	}
-	
+
+	/**
+	 * Update the initial object with the solution
+	 */
 	public void updatePlaneArray() {
 		for (int i = 0; i < nb_of_planes; i++) {
 			this.planes[i].setLanding(landing[i].getLB());
@@ -119,6 +137,11 @@ public class CSPModel {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param id number of the runway
+	 * @return a list of all planes on runway id
+	 */
 	public List<Plane> getPlaneForRunway(int id) {
 		List<Plane> planes = new ArrayList<>();
 		for (int i=0; i<nb_of_planes; i++) {
@@ -129,10 +152,19 @@ public class CSPModel {
 		return planes;
 	}
 	
+	/**
+	 * 
+	 * @param id number of the runway
+	 * @return the capacity of a runway id
+	 */
 	public int getRunwayCapacity(int id) {
 		return runway_max_capacity[id];
 	}
 	
+	/**
+	 * 
+	 * @return the number of runway
+	 */
 	public int getNbOfRunways() {
 		return this.nb_of_runways;
 	}

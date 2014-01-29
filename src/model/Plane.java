@@ -15,8 +15,8 @@ public class Plane{
 	private int landing;
 			
 	/**
-	 * Create a plane
-	 * @param w Weight of the plane
+	 * Create a stay
+	 * @param w Weight of the stay
 	 * @param landing Beginning of the landing window
 	 * @param takeoff End of the takeoff window
 	 */
@@ -28,7 +28,7 @@ public class Plane{
 	
 	/**
 	 * 
-	 * @return the weight of the plane
+	 * @return the weight of the stay
 	 */
 	public int getWeight() {
 		 return weight;
