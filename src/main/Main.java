@@ -53,7 +53,6 @@ public class Main {
 				}
 				cSPModel = new CSPModel(planes, new int[] { 6, 5, 3, 3, 3, 4,
 						2, 1, 1 }, 1200);
-				cSPModel.solve();
 
 				String page = MainFrame.HEADER;
 				page += MainFrame.parseFile(new File(MainFrame.INDEX_ROUTE));

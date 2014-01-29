@@ -4,7 +4,21 @@ google.load('visualization', '1.0', {'packages':['timeline','corechart']});
 // Set a callback to run when the Google Visualization API is loaded.
 google.setOnLoadCallback(chargeFrames);
 
+function getURLParameter(name) {
+	  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
+
+function setSelectValue(name) {
+	if(getURLParameter(name) != null) {
+		document.getElementById(name).value = getURLParameter(name);
+	}
+}
+
 function chargeFrames(){
+	setSelectValue('generatorDifficulty');
+	setSelectValue('generatorNbPlanes');
+	setSelectValue('generatorType');
+	
 	var runways = document.getElementsByClassName("runwayGraph");
 	var weight = document.getElementsByClassName("runwayWeight");
 	var i = 0;
