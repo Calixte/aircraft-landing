@@ -6,7 +6,7 @@
 		données linéaires dans le temps ou aléatoire puis lancer 
 		la résolution pour que l'algorithme calcul les décollages 
 		et atterrissages optimaux selon vos contraintes.</p>
-		<p>Générer des données : 
+		<p>Générer des données (type, difficulté, nombre d'avions, temps d'exécution max): 
 			<form method="GET" action="/generate">
 			<select id="generatorType" name="generatorType">
 				<option value=linear>Linéaire</option>
@@ -20,9 +20,15 @@
 			<select id="generatorNbPlanes" name="generatorNbPlanes">
 				<option value=20>20</option>
 				<option value=50>50</option>
-				<option value=100>100</option>
-				<option value=200>200</option>
-				<option value=350>350</option>
+				<option value=100>100 (Nantes)</option>
+				<option value=200>200 (Nice)</option>
+				<option value=350>350 (Barcelone)</option>
+			</select>
+			<select id="generatorTimeOut" name="generatorTimeOut">
+				<option value=10>10 s</option>
+				<option value=30>30 s</option>
+				<option value=60>1 min</option>
+				<option value=300>5 min</option>
 			</select>
 			<input type="submit" value="Générer et Optimiser">
 		</form>

@@ -43,6 +43,8 @@ public class Main {
 						.queryParams("generatorDifficulty"));
 				int nbOfFlights = Integer.parseInt(request
 						.queryParams("generatorNbPlanes"));
+				long timeOut = Long.parseLong(request
+						.queryParams("generatorTimeOut"));
 				planes = new Plane[nbOfFlights];
 				switch (type) {
 				case DataGenerator.LINEAR:
@@ -52,7 +54,7 @@ public class Main {
 					planes = generator.generateRandom(nbOfFlights, difficulty);
 				}
 				cSPModel = new CSPModel(planes, new int[] { 6, 5, 3, 3, 3, 4,
-						2, 1, 1 }, 1200);
+						2, 1, 1 }, 1200, timeOut * 1000);
 
 				String page = MainFrame.HEADER;
 				page += MainFrame.parseFile(new File(MainFrame.INDEX_ROUTE));
@@ -113,8 +115,7 @@ public class Main {
 				int runwayCapacity = cSPModel.getRunwayCapacity(id);
 				List<Plane> planes = cSPModel.getPlaneForRunway(id);
 				String data = "{\"graphs\":[{\"Timeline\" : [[\"Position\",\"Flight\", \"landing\", \"take off\"],";
-				data += "[\"Runway n°" + (id + 1)
-						+ "\",\"Ouverture\",0,0],";
+				data += "[\"Runway n°" + (id + 1) + "\",\"Ouverture\",0,0],";
 				for (int i = 0; i < planes.size(); i++) {
 					data += "[\"Runway n°" + (id + 1) + "\",\"BA" + identifier
 							+ "\", " + planes.get(i).getLanding() + ", "

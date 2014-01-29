@@ -18,6 +18,7 @@ function chargeFrames(){
 	setSelectValue('generatorDifficulty');
 	setSelectValue('generatorNbPlanes');
 	setSelectValue('generatorType');
+	setSelectValue('generatorTimeOut');
 	
 	var runways = document.getElementsByClassName("runwayGraph");
 	var weight = document.getElementsByClassName("runwayWeight");

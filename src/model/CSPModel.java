@@ -43,15 +43,16 @@ public class CSPModel {
 	 * @param nb_of_planes number of planes
 	 * @param runway_capacity array of capacities of all runways
 	 * @param closing_time when the airport closes
+	 * @param timeOut maximum resolution time
 	 */
-	public CSPModel(Plane[] planes, int[] runway_capacity, int closing_time){
+	public CSPModel(Plane[] planes, int[] runway_capacity, int closing_time, long timeOut){
 		this.closing_time=closing_time;
 		this.runway_max_capacity = runway_capacity;
 		this.planes = planes;
 		
 		this.nb_of_runways=runway_capacity.length;
 		this.nb_of_planes=planes.length;
-		this.solve();
+		this.solve(timeOut);
 	}
 	
 	/**
@@ -120,10 +121,10 @@ public class CSPModel {
 	/**
 	 * Instantiate and launch the solver
 	 */
-	private void solve() {
+	private void solve(long timeOut) {
 		solver=new Solver();
 		model(solver);
-		SMF.limitTime(solver, 10000);
+		SMF.limitTime(solver, timeOut);
 		solver.findSolution();
 	}
 
