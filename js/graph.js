@@ -30,11 +30,27 @@ function chargeFrames(){
 	                        return;
 	                }
 	                var graphs = JSON.parse(response)['graphs'];
+					formatDates(graphs[0]['Timeline']);
 	                drawChart(runways[j], 'Piste d\'atterissage', graphs[0]['Timeline'],'Timeline', 0);
 					drawChart(weight[j], 'Charge sur la piste', graphs[1]['LineChart'],'LineChart', graphs[1]['vAxisHeight']);
 	        }
 		}(i));
 	}
+}
+
+function formatDates(array) {
+	array[1][2] = new Date(0,0,0,6,0,0);
+	array[1][3] = new Date(0,0,0,6,0,0);
+	for (i=2;i<array.length - 1;i++) {
+		landingHour = 6 + Math.floor(array[i][2] / 60);
+		landingMinute = array[i][2] % 60;
+		array[i][2] = new Date(0,0,0,landingHour,landingMinute,0);
+		takeOffHour = 6 + Math.floor(array[i][3] / 60);
+		takeOffMinute = array[i][3] % 60;
+		array[i][3] = new Date(0,0,0,takeOffHour,takeOffMinute,0);
+	}
+	array[array.length - 1][2] = new Date(0,0,1,0,0,0);
+	array[array.length - 1][3] = new Date(0,0,1,0,0,0);
 }
 
 function drawChart(container, title, data, typeOfChart, vAxisHeight) {

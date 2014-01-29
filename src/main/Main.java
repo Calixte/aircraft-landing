@@ -113,6 +113,8 @@ public class Main {
 				int runwayCapacity = cSPModel.getRunwayCapacity(id);
 				List<Plane> planes = cSPModel.getPlaneForRunway(id);
 				String data = "{\"graphs\":[{\"Timeline\" : [[\"Position\",\"Flight\", \"landing\", \"take off\"],";
+				data += "[\"Runway n°" + (id + 1)
+						+ "\",\"Ouverture\",0,0],";
 				for (int i = 0; i < planes.size(); i++) {
 					data += "[\"Runway n°" + (id + 1) + "\",\"BA" + identifier
 							+ "\", " + planes.get(i).getLanding() + ", "
