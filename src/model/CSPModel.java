@@ -168,4 +168,14 @@ public class CSPModel {
 	public int getNbOfRunways() {
 		return this.nb_of_runways;
 	}
+	
+	public int getMaxRunwayCapacity() {
+		int max = 0;
+		for (int i = 0; i<this.nb_of_runways; i++) {
+			if (runway_max_capacity[i] > max) {
+				max = runway_max_capacity[i];
+			}
+		}
+		return max;
+	}
 }

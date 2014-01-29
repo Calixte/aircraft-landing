@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class MainFrame {
 
-	public static final String TITLE = "<title>CSPModel landing</title>";
+	public static final String TITLE = "<title>Aircraft landing</title>";
 	public static final String INDEX_ROUTE = "index.html";
 	public static final String STYLESHEET_ROUTE = "css/stylesheet.css";
 	public static final String BOOTSTRAP_ROUTE = "css/bootstrap.min.css";

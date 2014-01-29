@@ -16,18 +16,19 @@ function chargeFrames(){
 	                        return;
 	                }
 	                var graphs = JSON.parse(response)['graphs'];
-	                drawChart(runways[j], 'Piste d\'atterissage', graphs[0]['Timeline'],'Timeline');
-					drawChart(weight[j], 'Charge sur la piste', graphs[1]['LineChart'],'LineChart');
+	                drawChart(runways[j], 'Piste d\'atterissage', graphs[0]['Timeline'],'Timeline', 0);
+					drawChart(weight[j], 'Charge sur la piste', graphs[1]['LineChart'],'LineChart', graphs[1]['vAxisHeight']);
 	        }
 		}(i));
 	}
 }
 
-function drawChart(container, title, data, typeOfChart) {
+function drawChart(container, title, data, typeOfChart, vAxisHeight) {
     var options = {'title': title, 
                     legend: {position : 'in'}, 
                     'backgroundColor': { 'fill':'transparent' },
-                    'chartArea':{width:"80%",height:"80%"}};
+                    'chartArea':{width:"80%",height:"80%"},
+					'vAxis':{maxValue:vAxisHeight}};
     var chart;
 	switch(typeOfChart) {
 	case 'Timeline':
