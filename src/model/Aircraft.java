@@ -4,6 +4,7 @@ import java.util.List;
 
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
+import solver.constraints.LogicalConstraintFactory;
 import solver.search.loop.monitors.SMF;
 import solver.search.strategy.IntStrategyFactory;
 import solver.search.strategy.strategy.StrategiesSequencer;
@@ -71,6 +72,15 @@ public class Aircraft {
 		
 		for(int i = 0 ; i < this.nb_of_runways ; i++) {
 			s.post(IntConstraintFactory.cumulative(plane, ArrayUtils.transpose(plane_weight)[i], VariableFactory.fixed(runway_max_capacity[i], s)));
+		}
+		
+		for(int i = 0 ; i < this.nb_of_planes ; i++) {
+			for(int j = 0 ; j < nb_of_planes ; j++) {
+				s.post(LogicalConstraintFactory.ifThenElse(
+						IntConstraintFactory.arithm(landing[i], "<=", landing[j]), 
+						IntConstraintFactory.arithm(take_off[i], "<=", take_off[j]),
+						IntConstraintFactory.arithm(take_off[i], ">=", take_off[j])));
+			}
 		}
 		
 		s.set(new StrategiesSequencer(
