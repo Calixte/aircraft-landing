@@ -1,8 +1,0 @@
-/**
- * 
- */
-/**
- * @author Adrien
- *
- */
-package generator;
