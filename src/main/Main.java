@@ -49,8 +49,8 @@ public class Main {
 				case DataGenerator.RANDOM:
 					planes = generator.generateRandom(nbOfFlights, difficulty);
 				}
-				aircraft = new Aircraft(planes, new int[] { 6, 5, 3, 3, 3, 4,
-						2, 1, 1 }, 1200);
+				aircraft = new Aircraft(planes, new int[] { 6, 5, 3, 2, 7, 6,
+						4, 1, 1 }, 1200);
 				aircraft.solve();
 				aircraft.updatePlaneArray();
 				int nbOfRunways = aircraft.getNbOfRunways();
@@ -124,10 +124,12 @@ public class Main {
 							weight += p.getWeight();
 						}
 					}
-					data += "["+i+", "+weight+", "+runwayCapacity+"],";
+					data += "[" + i + ", " + weight + ", " + runwayCapacity
+							+ "],";
 				}
 				data = data.substring(0, data.length() - 1);
-				data += "]}]}";
+				data += "], \"vAxisHeight\":" + aircraft.getMaxRunwayCapacity()
+						+ "}]}";
 				return data;
 			}
 		});
