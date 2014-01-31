@@ -9,9 +9,7 @@ import generator.DataGenerator;
 import model.CSPModel;
 import model.Plane;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -50,9 +48,8 @@ public class modelTest {
 	DataGenerator generator = new DataGenerator();
 	Plane[] planes = new Plane[nbOfFlights];
 	planes = generator.generateRandom(nbOfFlights, difficulty);
-	CSPModel cSPModel = new CSPModel(planes, new int[] { 6, 5, 3, 3, 3, 4,2, 1, 1 }, 1200);
-	cSPModel.solve();	
-	fail("Not yet implemented");
+	CSPModel cSPModel = new CSPModel(planes, new int[] { 6, 5, 3, 3, 3, 4,2, 1, 1 }, 1200,1000);
+	// fail("Not yet implemented");
     }
     
     private static void generateCsvFile(int[][][] tab)
