@@ -13,6 +13,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * @author Sabrine DJEDIDI
+ *
+ */
 public class modelTest {
     private final int nbRuns = 100;
     private int[][][] statsBacktracks;
@@ -38,7 +42,6 @@ public class modelTest {
 	    for(int j=0;j<5;j++){
 		for(int k=0;k<nbRuns;k++){
 		    test(i,j);
-		    
 		}
 	    }
 	}
@@ -48,7 +51,7 @@ public class modelTest {
 	DataGenerator generator = new DataGenerator();
 	Plane[] planes = new Plane[nbOfFlights];
 	planes = generator.generateRandom(nbOfFlights, difficulty);
-	CSPModel cSPModel = new CSPModel(planes, new int[] { 6, 5, 3, 3, 3, 4,2, 1, 1 }, 1200,1000);
+	CSPModel cSPModel = new CSPModel(planes, new int[] { 6, 5, 3, 3, 3, 4,2, 1, 1 }, 1200,100);
 	// fail("Not yet implemented");
     }
     
@@ -56,26 +59,15 @@ public class modelTest {
     {
  	try
  	{
- 	    FileWriter writer = new FileWriter("c:\\testMe.csv");
-  
+ 	    FileWriter writer = new FileWriter("target\\output"+System.currentTimeMillis()+".csv");
+ 	    
  	    for(int i=0;i<3;i++){
  		for(int j=0;j<5;j++){
          	    writer.append("Difficulty ");
          	    writer.append(',');
          	    writer.append("Age");
          	    writer.append('\n');
-          
-         	    writer.append("MKYONG");
-         	    writer.append(',');
-         	    writer.append("26");
-                    writer.append('\n');
-          
-         	    writer.append("YOUR NAME");
-         	    writer.append(',');
-         	    writer.append("29");
-         	    writer.append('\n');
-         	    
-  
+            
  		}
  	    }
  	    //generate whatever data you want
