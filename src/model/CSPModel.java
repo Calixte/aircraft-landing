@@ -6,6 +6,8 @@ import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.constraints.LogicalConstraintFactory;
 import solver.search.loop.monitors.SMF;
+import solver.search.measure.IMeasures;
+import solver.search.measure.MeasuresRecorder;
 import solver.search.strategy.IntStrategyFactory;
 import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.variables.IntVar;
@@ -182,5 +184,9 @@ public class CSPModel {
 	
 	public long getNbSolutions() {
 		return solver.getMeasures().getSolutionCount();
+	}
+	
+	public IMeasures getMeasures(){
+	    return solver.getMeasures();
 	}
 }
