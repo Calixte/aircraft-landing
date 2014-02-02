@@ -1,4 +1,4 @@
-aircraft-landing	By C. Bonsart, A. Blaise , S. Barlet & S. Djedidi
+aircraft-landing
 ================
 ###Introduction
 This project aims to create a model of the daily aircraft-landing procedure using Constraint Programming.
